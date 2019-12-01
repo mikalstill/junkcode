@@ -32,10 +32,22 @@ def _make_req(method, url, data, headers):
 
     try:
         with urllib.request.urlopen(req) as res:
-            return res.headers, json.loads(res.read())
+            out = json.loads(res.read())
+            pretty = json.dumps(out, indent=4, sort_keys=True)
+
+            print('    result: code = %d' % res.code)
+            for header in headers:
+                print('    header: %s=%s' %(header, headers[header]))
+            for line in pretty.split('\n'):
+                print('  returned: %s' % line)
+
+            print()
+
+            return res.headers, out
     except urllib.error.HTTPError as e:
-        print('     error: code = %d' % e.code)
+        print('    result: code = %d' % e.code)
         print('     error: reason = %s' % e.reason)
+        print()
         return None
 
 
@@ -148,6 +160,20 @@ def getKeystoneV3Catalog(token):
     return catalog
 
 
+def getFlavors(token, service_url, tenant=None):
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Auth-Token': token,
+        'X-OpenStack-Nova-API-Version': '2.42',
+    }
+    url = '%s/flavors/detail' % service_url
+    url = url % {'tenant_id': tenant}
+
+    rhead, data = _make_req('GET', url, None, headers)
+    return data.get('flavors')
+
+
 def getServers(token, service_url, tenant=None):
     headers = {
         'Content-Type': 'application/json',
@@ -162,18 +188,22 @@ def getServers(token, service_url, tenant=None):
     return data.get('servers')
 
 
-def summarizeServer(server_keys, server):
+def summarizeServer(server_keys, server, flavors):
     summary = []
 
     for key in server_keys:
         data = server.get(key)
         if type(data) == dict and 'id' in data:
             data = data['id']
-        elif key == 'addresses':
+
+        if key == 'addresses':
             count = 0
             for network in data:
                 count += len(data[network])
             data = count
+        elif key == 'flavor':
+            data = flavors[data]
+
         summary.append(data)
 
     return summary
@@ -222,8 +252,12 @@ if __name__ == '__main__':
                 name = endpoint.get('name')
                 services[name] = endpoint.get('endpoints')[0].get('publicURL')
 
+            flavors = {}
+            for flavor in getFlavors(token, services['nova'], tenant.get('id')):
+                flavors[flavor.get('id')] = '%(vcpus)s cpu, %(ram)s MiB RAM, %(disk)s GiB disk' % flavor
+
             for server in getServers(token, services['nova'], tenant.get('id')):
-                summary = summarizeServer(server_keys, server)
+                summary = summarizeServer(server_keys, server, flavors)
                 summary.append(tenant.get('name'))
                 pt.add_row(summary)
 
@@ -235,8 +269,13 @@ if __name__ == '__main__':
 
         for tenant in projects:
             ptoken, ptoken_data = getKeystoneV3Token(scope=tenant.get('id'))
+
+            flavors = {}
+            for flavor in getFlavors(ptoken, services['nova'], tenant.get('id')):
+                flavors[flavor.get('id')] = '%(vcpus)s cpu, %(ram)s MiB RAM, %(disk)s GiB disk' % flavor
+
             for server in getServers(ptoken, services['nova'], tenant.get('id')):
-                summary = summarizeServer(server_keys, server)
+                summary = summarizeServer(server_keys, server, flavors)
                 summary.append(tenant.get('name'))
                 pt.add_row(summary)
 
