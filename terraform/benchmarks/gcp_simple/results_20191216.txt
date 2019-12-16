@@ -1,0 +1,12 @@
+gcp "terraform init" returned 0 after 0.13 seconds
+gcp "terraform plan" returned 0 after 0.57 seconds
+gcp "terraform apply -auto-approve" returned 0 after 13.59 seconds
+gcp "terraform destroy -auto-approve" returned 0 after 178.21 seconds
+gcp "terraform apply -auto-approve" returned 0 after 13.43 seconds
+gcp "terraform destroy -auto-approve" returned 0 after 199.63 seconds
+gcp "terraform apply -auto-approve" returned 0 after 13.52 seconds
+gcp "terraform destroy -auto-approve" returned 0 after 177.66 seconds
+gcp "terraform apply -auto-approve" returned 0 after 14.28 seconds
+gcp "terraform destroy -auto-approve" returned 0 after 189.05 seconds
+gcp "terraform apply -auto-approve" returned 0 after 12.88 seconds
+gcp "terraform destroy -auto-approve" returned 0 after 179.31 seconds

@@ -1,0 +1,12 @@
+aws "terraform init" returned 0 after 0.32 seconds
+aws "terraform plan" returned 0 after 5.22 seconds
+aws "terraform apply -auto-approve" returned 0 after 35.77 seconds
+aws "terraform destroy -auto-approve" returned 0 after 44.54 seconds
+aws "terraform apply -auto-approve" returned 0 after 29.43 seconds
+aws "terraform destroy -auto-approve" returned 0 after 65.48 seconds
+aws "terraform apply -auto-approve" returned 0 after 35.62 seconds
+aws "terraform destroy -auto-approve" returned 0 after 44.64 seconds
+aws "terraform apply -auto-approve" returned 0 after 36.15 seconds
+aws "terraform destroy -auto-approve" returned 0 after 44.43 seconds
+aws "terraform apply -auto-approve" returned 0 after 35.98 seconds
+aws "terraform destroy -auto-approve" returned 0 after 34.31 seconds

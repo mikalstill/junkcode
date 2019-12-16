@@ -1,0 +1,12 @@
+azure "terraform init" returned 0 after 0.29 seconds
+azure "terraform plan" returned 0 after 6.50 seconds
+azure "terraform apply -auto-approve" returned 0 after 153.68 seconds
+azure "terraform destroy -auto-approve" returned 0 after 171.36 seconds
+azure "terraform apply -auto-approve" returned 0 after 154.27 seconds
+azure "terraform destroy -auto-approve" returned 0 after 184.06 seconds
+azure "terraform apply -auto-approve" returned 0 after 154.43 seconds
+azure "terraform destroy -auto-approve" returned 0 after 185.62 seconds
+azure "terraform apply -auto-approve" returned 0 after 157.57 seconds
+azure "terraform destroy -auto-approve" returned 0 after 184.44 seconds
+azure "terraform apply -auto-approve" returned 0 after 158.83 seconds
+azure "terraform destroy -auto-approve" returned 0 after 185.13 seconds

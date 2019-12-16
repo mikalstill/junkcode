@@ -4,6 +4,8 @@
 # transitioning workloads.
 
 import argparse
+import csv
+from io import StringIO
 import json
 import os
 from prettytable import PrettyTable
@@ -12,20 +14,25 @@ import urllib.error
 import urllib.request
 
 
-def _make_req(method, url, data, headers):
-    print('%s %s' % (method, url))
-    for header in headers:
-        print('    header: %s=%s' %(header, headers[header]))
+args = None
 
+
+def _make_req(method, url, data, headers):
     if data:
-        posted = json.dumps(data, indent=4, sort_keys=True)
-        for line in posted.split('\n'):
-            print('    posted: %s' % line)
-        posted = posted.encode()
+        posted = json.dumps(data, indent=4, sort_keys=True).encode()
     else:
         posted = None
 
-    print()
+    if args.verbose:
+        print('%s %s' % (method, url))
+        for header in headers:
+            print('    header: %s=%s' %(header, headers[header]))
+
+        if data:
+            for line in posted.decode().split('\n'):
+                print('    posted: %s' % line)
+
+        print()
 
     req = urllib.request.Request(url=url, method=method, data=posted,
                                  headers=headers)
@@ -33,22 +40,23 @@ def _make_req(method, url, data, headers):
     try:
         with urllib.request.urlopen(req) as res:
             out = json.loads(res.read())
-            pretty = json.dumps(out, indent=4, sort_keys=True)
 
-            print('    result: code = %d' % res.code)
-            for header in headers:
-                print('    header: %s=%s' %(header, headers[header]))
-            for line in pretty.split('\n'):
-                print('  returned: %s' % line)
+            if args.verbose:
+                print('    result: code = %d' % res.code)
+                for header in headers:
+                    print('    header: %s=%s' %(header, headers[header]))
+                for line in json.dumps(out, indent=4, sort_keys=True).split('\n'):
+                    print('  returned: %s' % line)
 
-            print()
+                print()
 
             return res.headers, out
     except urllib.error.HTTPError as e:
-        print('    result: code = %d' % e.code)
-        print('     error: reason = %s' % e.reason)
-        print()
-        return None
+        if args.verbose:
+            print('    result: code = %d' % e.code)
+            print('     error: reason = %s' % e.reason)
+            print()
+        raise e
 
 
 def getKeystoneVersion():
@@ -209,17 +217,55 @@ def summarizeServer(server_keys, server, flavors):
     return summary
 
 
+class PrettyOut(object):
+    def __init__(self, style, headers):
+        self.style = style
+        self.headers = headers
+        self.rows = []
+
+    def add(self, values):
+        self.rows.append(values)
+
+    def emit(self):
+        if self.style == 'table':
+            pt = PrettyTable()
+            pt.field_names = self.headers
+
+            for row in self.rows:
+                pt.add_row(row)
+
+            return str(pt)
+
+        elif self.style == 'csv':
+            f = StringIO()
+            csv_file = csv.writer(f, delimiter=',')
+            csv_file.writerow(self.headers)
+
+            for row in self.rows:
+                csv_file.writerow(row)
+
+            return f.getvalue()
+
+        else:
+            raise Exception('Unknown output style %s' % self.style)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--style', default='table',
+                        help='Output style. One of csv or table.')
     parser.add_argument('--tenants',
                         help=('List of tenants to process, separated by commas. '
                               'This is used only for Keystone v2 authenticated users. '
                               'For example: foo=1234,bar=5687'))
+    parser.add_argument('--verbose',
+                        help='increase output verbosity',
+                        action='store_true')
+
     args = parser.parse_args()
 
     server_keys = ['id', 'name', 'flavor', 'image', 'status', 'addresses', 'tenant']
-    pt = PrettyTable()
-    pt.field_names = server_keys
+    po = PrettyOut(args.style, server_keys)
     server_keys = server_keys[:-1]
 
     auth_version = getKeystoneVersion()
@@ -254,12 +300,12 @@ if __name__ == '__main__':
 
             flavors = {}
             for flavor in getFlavors(token, services['nova'], tenant.get('id')):
-                flavors[flavor.get('id')] = '%(vcpus)s cpu, %(ram)s MiB RAM, %(disk)s GiB disk' % flavor
+                flavors[flavor.get('id')] = '%(name)s: %(vcpus)s cpu, %(ram)s MiB RAM, %(disk)s GiB disk' % flavor
 
             for server in getServers(token, services['nova'], tenant.get('id')):
                 summary = summarizeServer(server_keys, server, flavors)
                 summary.append(tenant.get('name'))
-                pt.add_row(summary)
+                po.add(summary)
 
     elif auth_version.startswith('v3'):
         token, token_data = getKeystoneV3Token()
@@ -272,15 +318,15 @@ if __name__ == '__main__':
 
             flavors = {}
             for flavor in getFlavors(ptoken, services['nova'], tenant.get('id')):
-                flavors[flavor.get('id')] = '%(vcpus)s cpu, %(ram)s MiB RAM, %(disk)s GiB disk' % flavor
+                flavors[flavor.get('id')] = '%(name)s: %(vcpus)s cpu, %(ram)s MiB RAM, %(disk)s GiB disk' % flavor
 
             for server in getServers(ptoken, services['nova'], tenant.get('id')):
                 summary = summarizeServer(server_keys, server, flavors)
                 summary.append(tenant.get('name'))
-                pt.add_row(summary)
+                po.add(summary)
 
     else:
         print('Unknown auth version %s' % auth_version)
         sys.exit(1)
 
-    print(pt)
+    print(po.emit())
