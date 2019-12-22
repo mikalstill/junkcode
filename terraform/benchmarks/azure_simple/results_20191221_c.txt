@@ -1,0 +1,99 @@
+2019-12-21 17:58:14.678318 Run id is 1576911494_68
+2019-12-21 17:58:14.976604 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 17:58:23.657311 azure "terraform plan" returned 0 after 8.68 seconds
+2019-12-21 17:59:36.543330 azure "terraform apply -auto-approve" returned 0 after 72.89 seconds
+2019-12-21 18:11:50.527195 azure "terraform destroy -auto-approve" returned 0 after 733.98 seconds
+2019-12-21 18:11:50.527374 Run id is 1576912310_53
+2019-12-21 18:11:50.826608 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 18:12:02.065053 azure "terraform plan" returned 0 after 11.24 seconds
+2019-12-21 18:13:08.501327 azure "terraform apply -auto-approve" returned 0 after 66.44 seconds
+2019-12-21 18:25:15.390043 azure "terraform destroy -auto-approve" returned 0 after 726.89 seconds
+2019-12-21 18:25:15.390265 Run id is 1576913115_39
+2019-12-21 18:25:15.685240 azure "terraform init" returned 0 after 0.29 seconds
+2019-12-21 18:25:24.307355 azure "terraform plan" returned 0 after 8.62 seconds
+2019-12-21 18:26:24.377001 azure "terraform apply -auto-approve" returned 0 after 60.07 seconds
+2019-12-21 18:38:08.528093 azure "terraform destroy -auto-approve" returned 0 after 704.15 seconds
+2019-12-21 18:38:08.528331 Run id is 1576913888_53
+2019-12-21 18:38:08.825817 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 18:38:14.883249 azure "terraform plan" returned 0 after 6.06 seconds
+2019-12-21 18:39:18.260128 azure "terraform apply -auto-approve" returned 0 after 63.38 seconds
+2019-12-21 19:05:41.467727 azure "terraform destroy -auto-approve" returned 0 after 1583.21 seconds
+2019-12-21 19:05:41.467921 Run id is 1576915541_47
+2019-12-21 19:05:41.775400 azure "terraform init" returned 0 after 0.31 seconds
+2019-12-21 19:05:47.704173 azure "terraform plan" returned 0 after 5.93 seconds
+2019-12-21 19:06:52.293222 azure "terraform apply -auto-approve" returned 0 after 64.59 seconds
+2019-12-21 19:14:22.954757 azure "terraform destroy -auto-approve" returned 0 after 450.66 seconds
+2019-12-21 19:14:22.954935 Run id is 1576916062_95
+2019-12-21 19:14:23.255479 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 19:14:29.596677 azure "terraform plan" returned 0 after 6.34 seconds
+2019-12-21 19:32:04.061176 azure "terraform apply -auto-approve" returned 0 after 1054.46 seconds
+2019-12-21 19:43:43.573300 azure "terraform destroy -auto-approve" returned 0 after 699.51 seconds
+2019-12-21 19:43:43.573810 Run id is 1576917823_57
+2019-12-21 19:43:43.870601 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 19:43:49.985280 azure "terraform plan" returned 0 after 6.11 seconds
+2019-12-21 19:45:43.593906 azure "terraform apply -auto-approve" returned 0 after 113.61 seconds
+2019-12-21 19:58:24.016751 azure "terraform destroy -auto-approve" returned 0 after 760.42 seconds
+2019-12-21 19:58:24.016977 Run id is 1576918704_02
+2019-12-21 19:58:24.314592 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 19:58:31.192194 azure "terraform plan" returned 0 after 6.88 seconds
+2019-12-21 20:00:58.101553 azure "terraform apply -auto-approve" returned 0 after 146.91 seconds
+2019-12-21 20:12:39.722777 azure "terraform destroy -auto-approve" returned 0 after 701.62 seconds
+2019-12-21 20:12:39.722956 Run id is 1576919559_72
+2019-12-21 20:12:40.017904 azure "terraform init" returned 0 after 0.29 seconds
+2019-12-21 20:12:49.172361 azure "terraform plan" returned 0 after 9.15 seconds
+2019-12-21 20:13:54.660398 azure "terraform apply -auto-approve" returned 0 after 65.49 seconds
+2019-12-21 20:21:03.952953 azure "terraform destroy -auto-approve" returned 0 after 429.29 seconds
+2019-12-21 20:21:03.953167 Run id is 1576920063_95
+2019-12-21 20:21:04.304705 azure "terraform init" returned 0 after 0.35 seconds
+2019-12-21 20:21:10.887000 azure "terraform plan" returned 0 after 6.58 seconds
+2019-12-21 20:22:14.165383 azure "terraform apply -auto-approve" returned 0 after 63.28 seconds
+2019-12-21 20:34:24.861189 azure "terraform destroy -auto-approve" returned 0 after 730.70 seconds
+2019-12-21 20:34:24.861383 Run id is 1576920864_86
+2019-12-21 20:34:25.161396 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 20:34:31.171078 azure "terraform plan" returned 0 after 6.01 seconds
+2019-12-21 20:36:36.688614 azure "terraform apply -auto-approve" returned 0 after 125.52 seconds
+2019-12-21 20:49:19.635652 azure "terraform destroy -auto-approve" returned 0 after 762.95 seconds
+2019-12-21 20:49:19.635834 Run id is 1576921759_64
+2019-12-21 20:49:19.929565 azure "terraform init" returned 0 after 0.29 seconds
+2019-12-21 20:49:26.477524 azure "terraform plan" returned 0 after 6.55 seconds
+2019-12-21 20:50:30.522900 azure "terraform apply -auto-approve" returned 0 after 64.05 seconds
+2019-12-21 21:01:18.481404 azure "terraform destroy -auto-approve" returned 0 after 647.96 seconds
+2019-12-21 21:01:18.481890 Run id is 1576922478_48
+2019-12-21 21:01:18.780391 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 21:01:25.988206 azure "terraform plan" returned 0 after 7.21 seconds
+2019-12-21 21:04:35.539819 azure "terraform apply -auto-approve" returned 0 after 189.55 seconds
+2019-12-21 21:08:20.669221 azure "terraform destroy -auto-approve" returned 0 after 225.13 seconds
+2019-12-21 21:08:20.669451 Run id is 1576922900_67
+2019-12-21 21:08:20.969571 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 21:08:28.843070 azure "terraform plan" returned 0 after 7.87 seconds
+2019-12-21 21:10:36.393081 azure "terraform apply -auto-approve" returned 0 after 127.55 seconds
+2019-12-21 21:21:41.651378 azure "terraform destroy -auto-approve" returned 0 after 665.26 seconds
+2019-12-21 21:21:41.651560 Run id is 1576923701_65
+2019-12-21 21:21:41.943771 azure "terraform init" returned 0 after 0.29 seconds
+2019-12-21 21:21:50.624672 azure "terraform plan" returned 0 after 8.68 seconds
+2019-12-21 21:23:49.867044 azure "terraform apply -auto-approve" returned 0 after 119.24 seconds
+2019-12-21 21:35:32.596204 azure "terraform destroy -auto-approve" returned 0 after 702.73 seconds
+2019-12-21 21:35:32.596397 Run id is 1576924532_6
+2019-12-21 21:35:32.888389 azure "terraform init" returned 0 after 0.29 seconds
+2019-12-21 21:35:44.751575 azure "terraform plan" returned 0 after 11.86 seconds
+2019-12-21 21:38:49.019770 azure "terraform apply -auto-approve" returned 0 after 184.27 seconds
+2019-12-21 21:46:36.351826 azure "terraform destroy -auto-approve" returned 0 after 467.33 seconds
+2019-12-21 21:46:36.352006 Run id is 1576925196_35
+2019-12-21 21:46:36.644017 azure "terraform init" returned 0 after 0.29 seconds
+2019-12-21 21:46:42.899548 azure "terraform plan" returned 0 after 6.26 seconds
+2019-12-21 21:50:07.960410 azure "terraform apply -auto-approve" returned 0 after 205.06 seconds
+2019-12-21 21:56:32.807525 azure "terraform destroy -auto-approve" returned 0 after 384.85 seconds
+2019-12-21 21:56:32.807700 Run id is 1576925792_81
+2019-12-21 21:56:33.102757 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 21:56:39.203423 azure "terraform plan" returned 0 after 6.10 seconds
+2019-12-21 21:58:56.501824 azure "terraform apply -auto-approve" returned 0 after 137.30 seconds
+2019-12-21 22:09:29.703535 azure "terraform destroy -auto-approve" returned 0 after 633.20 seconds
+2019-12-21 22:09:29.703717 Run id is 1576926569_7
+2019-12-21 22:09:29.996740 azure "terraform init" returned 0 after 0.29 seconds
+2019-12-21 22:09:59.638137 azure "terraform plan" returned 0 after 29.64 seconds
+2019-12-21 22:28:26.097370 azure "terraform apply -auto-approve" returned 0 after 1106.46 seconds
+2019-12-21 22:39:26.513987 azure "terraform destroy -auto-approve" returned 0 after 660.42 seconds
+2019-12-21 22:39:26.514185 Run id is 1576928366_51
+2019-12-21 22:39:26.809696 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 22:39:32.765262 azure "terraform plan" returned 0 after 5.96 seconds
+2019-12-21 22:41:36.185033 azure "terraform apply -auto-approve" returned 0 after 123.42 seconds

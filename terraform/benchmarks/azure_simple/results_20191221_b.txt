@@ -1,0 +1,5 @@
+2019-12-21 17:41:37.725740 Run id is 1576910497_73
+2019-12-21 17:41:38.024596 azure "terraform init" returned 0 after 0.30 seconds
+2019-12-21 17:41:44.462092 azure "terraform plan" returned 0 after 6.44 seconds
+2019-12-21 17:42:44.350673 azure "terraform apply -auto-approve" returned 0 after 59.89 seconds
+2019-12-21 17:53:54.347279 azure "terraform destroy -auto-approve" returned 0 after 670.00 seconds

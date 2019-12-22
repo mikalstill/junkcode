@@ -1,0 +1,17 @@
+2019-12-21 17:01:38.585417 Run id is 1576908098_59
+2019-12-21 17:01:38.881623 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908098_59_init.log terraform init" returned 0 after 0.30 seconds
+2019-12-21 17:01:44.513198 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908098_59_plan.log terraform plan" returned 0 after 5.63 seconds
+2019-12-21 17:02:47.885986 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908098_59_0_apply.log terraform apply -auto-approve" returned 0 after 63.37 seconds
+2019-12-21 17:14:58.191720 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908098_59_0_destroy.log terraform destroy -auto-approve" returned 0 after 730.31 seconds
+2019-12-21 17:14:58.191880 Run id is 1576908898_19
+2019-12-21 17:14:58.487363 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908898_19_init.log terraform init" returned 0 after 0.30 seconds
+2019-12-21 17:15:06.070339 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908898_19_plan.log terraform plan" returned 0 after 7.58 seconds
+2019-12-21 17:16:26.632230 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908898_19_0_apply.log terraform apply -auto-approve" returned 0 after 80.56 seconds
+2019-12-21 17:28:25.863796 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576908898_19_0_destroy.log terraform destroy -auto-approve" returned 0 after 719.23 seconds
+2019-12-21 17:28:25.863963 Run id is 1576909705_86
+2019-12-21 17:28:26.164581 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576909705_86_init.log terraform init" returned 0 after 0.30 seconds
+2019-12-21 17:28:32.756443 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576909705_86_plan.log terraform plan" returned 0 after 6.59 seconds
+2019-12-21 17:29:26.381770 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576909705_86_0_apply.log terraform apply -auto-approve" returned 0 after 53.63 seconds
+2019-12-21 17:37:55.756458 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576909705_86_0_destroy.log terraform destroy -auto-approve" returned 0 after 509.37 seconds
+2019-12-21 17:37:55.756616 Run id is 1576910275_76
+2019-12-21 17:37:56.055854 azure "TF_LOGS=TRACE TF_LOG_PATH=runlogs/1576910275_76_init.log terraform init" returned 0 after 0.30 seconds

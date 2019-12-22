@@ -1,0 +1,6 @@
+2019-12-22 09:09:55.589713 Test terraform is /srv/src/mikalstill/junkcode/terraform/benchmarks/azure_simple_2
+2019-12-22 09:09:55.590267 Run id is 1576966195_59
+2019-12-22 09:09:56.053775 azure "terraform init" returned 0 after 0.46 seconds
+2019-12-22 09:10:10.706351 azure "terraform plan -var-file=demo.tfvars" returned 0 after 14.65 seconds
+2019-12-22 09:11:57.124767 azure "terraform apply -auto-approve -var-file=demo.tfvars" returned 0 after 106.42 seconds
+2019-12-22 09:22:49.525534 azure "terraform destroy -auto-approve -var-file=demo.tfvars" returned 0 after 652.40 seconds
