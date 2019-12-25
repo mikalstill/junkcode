@@ -18,7 +18,7 @@ def readDpIds_inner(fromline):
     time.sleep(0.1)
     linecount = 1
     dpIds = {}
-    for line in urlopen('http://sonoff14/cs?c2=%d' % fromline).readlines():
+    for line in urlopen('http://sonoff15/cs?c2=%d' % fromline).readlines():
         line = line.rstrip()
         m = status_re.match(line.decode('utf-8'))
         if m:
@@ -38,7 +38,7 @@ def readDpIds(fromline):
 
 
 linecount = 0
-urlopen('http://sonoff14/cs?c2=65&c1=SerialSend5%2055aa0001000000')
+urlopen('http://sonoff15/cs?c2=65&c1=SerialSend5%2055aa0001000000')
 readlines, previousDpIds = readDpIds(linecount)
 linecount += readlines
 
@@ -58,7 +58,7 @@ while True:
 
     if previousDpIds != dpIds:
         for key in sorted(dpIds.keys()):
-            if previousDpIds[key] == dpIds[key]:
+            if previousDpIds.get(key) == dpIds.get(key):
                 sys.stdout.write(colorama.Fore.GREEN)
             else:
                 sys.stdout.write(colorama.Fore.RED)
@@ -66,5 +66,5 @@ while True:
         sys.stdout.write('\n')
         previousDpIds = dpIds
 
-    urlopen('http://sonoff14/cs?c2=65&c1=SerialSend5%2055aa0001000000')
+    urlopen('http://sonoff15/cs?c2=65&c1=SerialSend5%2055aa0001000000')
     time.sleep(0.5)
