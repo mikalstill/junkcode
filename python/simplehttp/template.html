@@ -1,0 +1,23 @@
+<html>
+
+<head>
+    <title>Show me the headers!</title>
+</head>
+
+<body>
+    <h1>{{timestamp}}</h1>
+    <ul>
+        {% for key in headers %}
+        <li>{{key}} = {{headers[key]}}</li>
+        {% endfor %}
+    </ul>
+
+    <br /><br />
+
+    <ul>
+        <li>Minimum distance to cluster: {{min_distance}}</li>
+        <li>Closest cluster: {{region}}</li>
+    </ul>
+</body>
+
+</html>
