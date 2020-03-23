@@ -6,7 +6,11 @@ import sys
 import time
 
 
-BASE_URL = 'https://%s:9440/PrismGateway/services/rest/v1'
+import urllib3
+urllib3.disable_warnings()
+
+
+BASE_URL = 'https://%s:9440/PrismGateway/services/rest/v2.0'
 
 
 class RestApi(object):
@@ -36,22 +40,18 @@ class RestApi(object):
         return r.status_code, r.json()
 
     def get_vms(self):
-        url = self.url + '/vms'
+        url = self.url + '/vms/'
         r = self.session.get(url)
         if r.status_code != 200:
             return r.status_code, r.text
         return r.status_code, r.json()
 
     def set_power(self, vm_uuid, power_state):
-        url = self.url + '/vms/' + vm_uuid
+        url = self.url + '/vms/' + vm_uuid + '/set_power_state/'
         body = {
-            'spec': {
-                'resources': {
-                    'power_state': 'off'
-                }
-            }
+            'transition': power_state
         }
-        r = self.session.put(url, body)
+        r = self.session.post(url, json=body)
         if r.status_code != 200:
             return r.status_code, r.text
         return r.status_code, r.json()
@@ -67,13 +67,13 @@ if __name__ == '__main__':
         sys.exit(1)
 
     print('Cluster is:')
-    print('    UUID: %s' % cluster_info['clusterUuid'])
+    print('    UUID: %s' % cluster_info['cluster_uuid'])
     print('    Version: %s' % cluster_info['version'])
 
     # Discover all VMs
     status, vms = r.get_vms()
     if status != 200:
-        print('Failed to fetch VMs: %s' % status)
+        print('Failed to fetch VMs: %s (%s)' %(status, vms))
         sys.exit(1)
 
     for vm in vms['entities']:
@@ -103,7 +103,7 @@ if __name__ == '__main__':
         sys.exit(1)
     print('%s is %s' %(vm_uuid, vm_info['powerState']))
 
-    status, output = r.set_power(vm_uuid, 'off')
+    status, output = r.set_power(vm_uuid, 'OFF')
     if status != 200:
         print('Failed to set power state: %s (%s)' %(status, output))
         sys.exit(1)
@@ -117,4 +117,4 @@ if __name__ == '__main__':
             sys.exit(1)
         print('%s is %s' %(vm_uuid, vm_info['powerState']))
 
-        done = vm_info['powerState'] == 'off'
+        done = vm_info['powerState'] == 'OFF'
