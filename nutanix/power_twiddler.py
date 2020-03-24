@@ -39,19 +39,16 @@ class RestApi(object):
             return r.status_code, r.text
         return r.status_code, r.json()
 
-    def get_vms(self):
-        url = self.url + '/vms/list'
-        r = self.session.post(url, json={'kind': 'vm'})
+    def put_vm(self, vm_info):
+        url = self.url + '/vms/' + vm_uuid
+        r = self.session.put(url, json=vm_info)
         if r.status_code != 200:
             return r.status_code, r.text
         return r.status_code, r.json()
 
-    def set_power(self, vm_uuid, power_state):
-        url = self.url + '/vms/' + vm_uuid + '/set_power_state/'
-        body = {
-            'transition': power_state
-        }
-        r = self.session.post(url, json=body)
+    def get_vms(self):
+        url = self.url + '/vms/list'
+        r = self.session.post(url, json={'kind': 'vm'})
         if r.status_code != 200:
             return r.status_code, r.text
         return r.status_code, r.json()
@@ -96,7 +93,7 @@ if __name__ == '__main__':
             print('    Disk: %s is %s MiB' %
                   (disk['uuid'], disk.get('disk_size_mib', 0)))
 
-    # Pause a single VM
+    # Power cycle a single VM
     print()
     print('---------------------------------------------')
     print()
@@ -106,13 +103,21 @@ if __name__ == '__main__':
     if status != 200:
         print('Failed to get VM info: %s (%s)' % (status, vm_info))
         sys.exit(1)
-    print('%s is %s' % (vm_uuid, vm_info['powerState']))
+    print('%s is %s' % (vm_uuid, vm_info['spec']['resources']['power_state']))
 
-    status, output = r.set_power(vm_uuid, 'OFF')
-    if status != 200:
-        print('Failed to set power state: %s (%s)' % (status, output))
+    if vm_info['spec']['resources']['power_state'] == 'OFF':
+        print('VM is already powered off, aborting...')
         sys.exit(1)
 
+    print('...powering off VM')
+    del vm_info['status']
+    vm_info['spec']['resources']['power_state'] = 'OFF'
+    status, vm_info = r.put_vm(vm_info)
+    if status != 202:
+        print('Failed to put VM info: %s (%s)' % (status, vm_info))
+        sys.exit(1)
+
+    print('...waiting for VM to be powered off')
     done = False
     while not done:
         time.sleep(1)
@@ -120,6 +125,7 @@ if __name__ == '__main__':
         if status != 200:
             print('Failed to get VM info after state change: %s' % status)
             sys.exit(1)
-        print('%s is %s' % (vm_uuid, vm_info['powerState']))
+        print('%s is %s' %
+              (vm_uuid, vm_info['spec']['resources']['power_state']))
 
-        done = vm_info['powerState'] == 'OFF'
+        done = vm_info['spec']['resources']['power_state'] == 'OFF'
