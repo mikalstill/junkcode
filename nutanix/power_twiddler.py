@@ -117,15 +117,14 @@ if __name__ == '__main__':
         print('Failed to put VM info: %s (%s)' % (status, vm_info))
         sys.exit(1)
 
-    print('...waiting for VM to be powered off')
+    start_time = time.time()
+    print('...monitoring VM power state')
     done = False
-    while not done:
-        time.sleep(1)
+    while time.time() - start_time < 600:
+        time.sleep(10)
         status, vm_info = r.get_vm(vm_uuid)
         if status != 200:
             print('Failed to get VM info after state change: %s' % status)
             sys.exit(1)
-        print('%s is %s' %
-              (vm_uuid, vm_info['spec']['resources']['power_state']))
-
-        done = vm_info['spec']['resources']['power_state'] == 'OFF'
+        print('+%03d seconds %s is %s' %
+              (time.time() - start_time, vm_uuid, vm_info['spec']['resources']['power_state']))
