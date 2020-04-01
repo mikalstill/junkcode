@@ -39,7 +39,7 @@ class RestApi(object):
             return r.status_code, r.text
         return r.status_code, r.json()
 
-    def put_vm(self, vm_info):
+    def put_vm(self, vm_uuid, vm_info):
         url = self.url + '/vms/' + vm_uuid
         r = self.session.put(url, json=vm_info)
         if r.status_code != 200:
@@ -52,6 +52,53 @@ class RestApi(object):
         if r.status_code != 200:
             return r.status_code, r.text
         return r.status_code, r.json()
+
+
+def power_on(r, vm_uuid, description):
+    status, vm_info = r.get_vm(vm_uuid)
+    if status != 200:
+        print('Failed to get VM info: %s (%s)' % (status, vm_info))
+        sys.exit(1)
+
+    if vm_info['spec']['resources']['power_state'] == 'ON':
+        return False
+
+    del vm_info['status']
+    vm_info['spec']['resources']['power_state'] = 'ON'
+    status, vm_info = r.put_vm(vm_uuid, vm_info)
+    if status != 202:
+        print('Failed to put VM info: %s (%s)' % (status, vm_info))
+        sys.exit(1)
+
+    return True
+
+
+def power_off(r, vm_uuid, description):
+    status, vm_info = r.get_vm(vm_uuid)
+    if status != 200:
+        print('Failed to get VM info: %s (%s)' % (status, vm_info))
+        sys.exit(1)
+
+    if vm_info['spec']['resources']['power_state'] == 'OFF':
+        return False
+
+    del vm_info['status']
+    vm_info['spec']['resources']['power_state'] = 'OFF'
+    status, vm_info = r.put_vm(vm_uuid, vm_info)
+    if status != 202:
+        print('Failed to put VM info: %s (%s)' % (status, vm_info))
+        sys.exit(1)
+
+    return True
+
+
+def is_powered_on(r, vm_uuid):
+    status, vm_info = r.get_vm(vm_uuid)
+    if status != 200:
+        print('Failed to get VM info: %s (%s)' % (status, vm_info))
+        sys.exit(1)
+
+    return vm_info['spec']['resources']['power_state'] == 'ON'
 
 
 if __name__ == '__main__':
@@ -93,38 +140,79 @@ if __name__ == '__main__':
             print('    Disk: %s is %s MiB' %
                   (disk['uuid'], disk.get('disk_size_mib', 0)))
 
-    # Power cycle a single VM
+    # Validate power cycling
     print()
     print('---------------------------------------------')
     print()
-    vm_uuid = '27a7dd0a-fec4-4918-98d7-634955ba81c6'
+    ubuntu_vm_uuid = '76f58a47-48ef-4651-b2a2-2b56c77ed4a8'
+    centos_vm_uuid = '1c3fdc7c-ddff-41d1-af71-12b800df4f08'
 
-    status, vm_info = r.get_vm(vm_uuid)
-    if status != 200:
-        print('Failed to get VM info: %s (%s)' % (status, vm_info))
-        sys.exit(1)
-    print('%s is %s' % (vm_uuid, vm_info['spec']['resources']['power_state']))
+    count = 1
+    while True:
+        # Power everything up
+        tests = {'centos': 'soft', 'ubuntu': 'soft'}
 
-    if vm_info['spec']['resources']['power_state'] == 'OFF':
-        print('VM is already powered off, aborting...')
-        sys.exit(1)
+        dirty = False
+        if power_on(r, ubuntu_vm_uuid, 'ubuntu'):
+            dirty = True
+        if power_on(r, centos_vm_uuid, 'centos'):
+            dirty = True
+        if dirty:
+            time.sleep(60)
 
-    print('...powering off VM')
-    del vm_info['status']
-    vm_info['spec']['resources']['power_state'] = 'OFF'
-    status, vm_info = r.put_vm(vm_info)
-    if status != 202:
-        print('Failed to put VM info: %s (%s)' % (status, vm_info))
-        sys.exit(1)
+        # Test compliance
+        dirty = False
+        if not is_powered_on(r, ubuntu_vm_uuid):
+            power_on(r, ubuntu_vm_uuid, 'ubuntu')
+            tests['ubuntu'] = 'hard'
+            dirty = True
+        if not is_powered_on(r, centos_vm_uuid):
+            power_on(r, centos_vm_uuid, 'centos')
+            tests['centos'] = 'hard'
+            dirty = True
 
-    start_time = time.time()
-    print('...monitoring VM power state')
-    done = False
-    while time.time() - start_time < 600:
-        time.sleep(10)
-        status, vm_info = r.get_vm(vm_uuid)
-        if status != 200:
-            print('Failed to get VM info after state change: %s' % status)
-            sys.exit(1)
-        print('+%03d seconds %s is %s' %
-              (time.time() - start_time, vm_uuid, vm_info['spec']['resources']['power_state']))
+        if dirty:
+            time.sleep(30)
+            if not is_powered_on(r, ubuntu_vm_uuid):
+                tests['ubuntu'] = 'fail'
+            if not is_powered_on(r, centos_vm_uuid):
+                tests['centos'] = 'fail'
+
+        print('Pass %3d  ON: ubuntu = %s, centos = %s'
+              % (count, tests['ubuntu'], tests['centos']))
+
+        # Power everything off
+        tests = {'centos': 'soft', 'ubuntu': 'soft'}
+
+        dirty = False
+        if power_off(r, ubuntu_vm_uuid, 'ubuntu'):
+            dirty = True
+        if power_off(r, centos_vm_uuid, 'centos'):
+            dirty = True
+        if dirty:
+            time.sleep(30)
+
+        # Test compliance
+        dirty = False
+        if is_powered_on(r, ubuntu_vm_uuid):
+            power_off(r, ubuntu_vm_uuid, 'ubuntu')
+            tests['ubuntu'] = 'hard'
+            dirty = True
+        if is_powered_on(r, centos_vm_uuid):
+            power_off(r, centos_vm_uuid, 'centos')
+            tests['centos'] = 'hard'
+            dirty = True
+
+        if dirty:
+            time.sleep(30)
+            if is_powered_on(r, ubuntu_vm_uuid):
+                tests['ubuntu'] = 'fail'
+            if is_powered_on(r, centos_vm_uuid):
+                tests['centos'] = 'fail'
+
+        print('Pass %3d OFF: ubuntu = %s, centos = %s'
+              % (count, tests['ubuntu'], tests['centos']))
+
+        count += 1
+        print('-------------------')
+        time.sleep(60)
