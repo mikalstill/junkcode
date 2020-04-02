@@ -10,7 +10,7 @@ import urllib3
 urllib3.disable_warnings()
 
 
-BASE_URL = 'https://%s:9440/api/nutanix/v3'
+BASE_URL = 'https://%s:9440'
 
 
 class RestApiException(Exception):
@@ -21,7 +21,8 @@ class RestApiException(Exception):
 
 class RestApi(object):
     def __init__(self, hostname, username, password):
-        self.url = BASE_URL % hostname
+        self.base_url = BASE_URL % hostname
+        self.api_url = self.base_url + '/api/nutanix/v3'
         self.session = self._get_session(username, password)
 
     def _get_session(self, username, password):
@@ -39,21 +40,21 @@ class RestApi(object):
 
     def get_clusters(self):
         return self._validated_request('post',
-                                       self.url + '/clusters/list',
+                                       self.api_url + '/clusters/list',
                                        json={'kind': 'cluster'})
 
     def get_vm(self, vm_uuid):
         return self._validated_request('get',
-                                       self.url + '/vms/' + vm_uuid)
+                                       self.api_url + '/vms/' + vm_uuid)
 
     def put_vm(self, vm_uuid, vm_info):
         return self._validated_request('put',
-                                       self.url + '/vms/' + vm_uuid,
+                                       self.api_url + '/vms/' + vm_uuid,
                                        json=vm_info)
 
     def get_vms(self):
         return self._validated_request('post',
-                                       self.url + '/vms/list',
+                                       self.api_url + '/vms/list',
                                        json={'kind': 'vm'})
 
     # Meta helper thingies
@@ -69,6 +70,60 @@ class RestApi(object):
 
     def is_powered_on(self, vm_uuid):
         return self.get_vm(vm_uuid)['spec']['resources']['power_state'] == 'ON'
+
+    # NOTE(mika): VMs don't always change power state when you ask them to.
+    # So instead we have some poor man's retry logic to try and get them to
+    # the state we want them to be in.
+    def batch_set_power_with_retry(self, uuids, state):
+        results = {}
+
+        # First attempt
+        for uuid in uuids:
+            if r.set_power_state(uuid, state):
+                results[uuid] = 'soft'
+            else:
+                results[uuid] = 'skip'
+
+        time.sleep(60)
+
+        # Test compliance
+        dirty = False
+        for uuid in uuids:
+            actual = 'OFF'
+            if r.is_powered_on(uuid):
+                actual = 'ON'
+
+            if actual != state:
+                r.set_power_state(uuid, state)
+                results[uuid] = 'hard'
+                dirty = True
+
+        # Verify
+        if dirty:
+            time.sleep(60)
+
+            for uuid in uuids:
+                actual = 'OFF'
+                if r.is_powered_on(uuid):
+                    actual = 'ON'
+
+                if actual != state:
+                    results[uuid] = 'fail'
+
+        return results
+
+    def get_vdi_url(self, uuid):
+        vm_info = self.get_vm(uuid)
+        return ('%(url)s/console/lib/noVNC/vnc_auto.html?'
+                'path=vnc/vm/%(uuid)s/proxy&uuid=%(uuid)s&'
+                'title=%(uuid)s&attached=false&hypervisorType=kKvm&'
+                'controllerVm=false&vmName=%(uuid)s&noV1Access=false&'
+                'useV3=true&isXi=false&clusterId=%(cluster)s'
+                % {
+                    'url': self.base_url,
+                    'uuid': uuid,
+                    'cluster': vm_info['spec']['cluster_reference']['uuid']
+                })
 
 
 if __name__ == '__main__':
@@ -105,74 +160,32 @@ if __name__ == '__main__':
         if vm['spec']['name'] == 'mikal centos':
             centos_vm_uuid = vm['metadata']['uuid']
 
+    # Fetch a VDI URL
+    print()
+    print('Ubuntu VDI: %s' % r.get_vdi_url(ubuntu_vm_uuid))
+    print()
+    print('Centos VDI: %s' % r.get_vdi_url(centos_vm_uuid))
+
     # Validate power cycling
     print()
     print('---------------------------------------------')
     print()
 
-    count = 1
-    while True:
-        # Power everything up
-        tests = {'centos': 'skip', 'ubuntu': 'skip'}
-
-        if r.set_power_state(ubuntu_vm_uuid, 'ON'):
-            tests['ubuntu'] = 'soft'
-        if r.set_power_state(centos_vm_uuid, 'ON'):
-            tests['centos'] = 'soft'
-        time.sleep(60)
-
-        # Test compliance
-        dirty = False
-        if not r.is_powered_on(ubuntu_vm_uuid):
-            r.set_power_state(ubuntu_vm_uuid, 'ON')
-            tests['ubuntu'] = 'hard'
-            dirty = True
-        if not r.is_powered_on(centos_vm_uuid):
-            r.set_power_state(centos_vm_uuid, 'ON')
-            tests['centos'] = 'hard'
-            dirty = True
-
-        if dirty:
-            time.sleep(60)
-            if not r.is_powered_on(ubuntu_vm_uuid):
-                tests['ubuntu'] = 'fail'
-            if not r.is_powered_on(centos_vm_uuid):
-                tests['centos'] = 'fail'
-
+    for count in range(5):
+        # Power on
+        results = r.batch_set_power_with_retry(
+            [ubuntu_vm_uuid, centos_vm_uuid], 'ON'
+        )
         print('Pass %3d  ON: ubuntu = %s, centos = %s'
-              % (count, tests['ubuntu'], tests['centos']))
+              % (count, results[ubuntu_vm_uuid], results[centos_vm_uuid]))
         time.sleep(60)
 
-        # Power everything off
-        tests = {'centos': 'skip', 'ubuntu': 'skip'}
-
-        if r.set_power_state(ubuntu_vm_uuid, 'OFF'):
-            tests['ubuntu'] = 'soft'
-        if r.set_power_state(centos_vm_uuid, 'OFF'):
-            tests['centos'] = 'soft'
-        time.sleep(120)
-
-        # Test compliance
-        dirty = False
-        if r.is_powered_on(ubuntu_vm_uuid):
-            r.set_power_state(ubuntu_vm_uuid, 'OFF')
-            tests['ubuntu'] = 'hard'
-            dirty = True
-        if r.is_powered_on(centos_vm_uuid):
-            r.set_power_state(centos_vm_uuid, 'OFF')
-            tests['centos'] = 'hard'
-            dirty = True
-
-        if dirty:
-            time.sleep(60)
-            if r.is_powered_on(ubuntu_vm_uuid):
-                tests['ubuntu'] = 'fail'
-            if r.is_powered_on(centos_vm_uuid):
-                tests['centos'] = 'fail'
-
+        # Power off
+        results = r.batch_set_power_with_retry(
+            [ubuntu_vm_uuid, centos_vm_uuid], 'OFF'
+        )
         print('Pass %3d OFF: ubuntu = %s, centos = %s'
-              % (count, tests['ubuntu'], tests['centos']))
+              % (count, results[ubuntu_vm_uuid], results[centos_vm_uuid]))
+        time.sleep(60)
 
-        count += 1
         print('-------------------')
-        time.sleep(120)
