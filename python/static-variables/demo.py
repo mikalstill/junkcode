@@ -4,8 +4,12 @@
 class Base(object):
     objtype = 'base'
 
-    def print_type(self):
+    def instance_method_print_type(self):
         print(type(self).objtype)
+
+    @classmethod
+    def class_method_print_type(cls):
+        print(cls.objtype)
 
 
 class Foo(Base):
@@ -13,8 +17,10 @@ class Foo(Base):
 
 
 a = Base()
-a.print_type()
+a.instance_method_print_type()
+Base.class_method_print_type()
 
 
 b = Foo()
-b.print_type()
+b.instance_method_print_type()
+Foo.class_method_print_type()
