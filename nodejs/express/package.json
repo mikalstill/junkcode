@@ -14,7 +14,7 @@
     "express": "^4.17.1",
     "morgan": "^1.9.1",
     "npm": "^6.12.1",
-    "pug": "^2.0.4"
+    "pug": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
