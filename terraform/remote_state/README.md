@@ -8,10 +8,10 @@ The important bits are:
 ~~~
 terraform {
   backend "http" {
-    address = "http://localhost:5000/terraform_state/4cdd0c76-d78b-11e9-9bea-db9cd8374f3a"
-    lock_address = "http://localhost:5000/terraform_lock/4cdd0c76-d78b-11e9-9bea-db9cd8374f3a"
+    address = "http://localhost:5001/terraform_state/4cdd0c76-d78b-11e9-9bea-db9cd8374f3a"
+    lock_address = "http://localhost:5001/terraform_lock/4cdd0c76-d78b-11e9-9bea-db9cd8374f3a"
     lock_method = "PUT"
-    unlock_address = "http://localhost:5000/terraform_lock/4cdd0c76-d78b-11e9-9bea-db9cd8374f3a"
+    unlock_address = "http://localhost:5001/terraform_lock/4cdd0c76-d78b-11e9-9bea-db9cd8374f3a"
     unlock_method = "DELETE"
   }
 }
